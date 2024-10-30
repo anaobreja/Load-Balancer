@@ -1,0 +1,46 @@
+/* Copyright 2023 Obreja Ana-Maria */
+************************************************************************************
+                            Load-Balancer - Tema 2 
+
+        Programul isi propune implementarea unui Load Balancer, folosit pentru 
+    a dirija uniform traficul către un set de servere cu o putere limitata de
+    procesare, prin intermediul Consistent Hashing-ului.
+        Consistent Hashing este reprezentat de un hash ring (in cazul programului,
+    un vector de tip int) in care sunt stocate etichetele serverelor (pe care adaugam
+    obiectele) si ale replicilor. Etichetele replicilor se calculeaza astfel:
+    eticheta_nr_replica = nr_replica * 10 ^ 5 + server_id. Fiecare server va avea 2
+    replici. Pentru stocarea obiectelor in servere am folosit hashtable-uri,
+    (implemenentarea este preluata din laborator).
+
+    Pentru a putea crea un Load Balancer, am efectuat urmatorii pasi:
+
+    - initializarea Load Balancer-ului, care contine un hash ring,
+    vectorul de servere si dimensiunile acestora.
+
+    - adaugarea unui server. In vectorul de servere, acesta este adaugat la
+    final. Aflam etichetele si le adaugam in hash ring in functie de hash-urile
+    acestora (ordonate crescator). Daca vor exista 2 servere cu hash-urile egale,
+    vom adauga etichetele in functie de id-urile serverelor. Astfel, vectorul de
+    servere creste cu un element, iar hash ring-ul cu 3 (aspect important pentru
+    alocarea dinamica). Pentru adaugarea serverelor este necesar sa evaluam
+    obiectele din serverele vecine. Astfel, daca am adaugat un server, pentru
+    fiecare replica verificam in hash ring daca hash-urile elementelor din serverul
+    corespunzator replicii urmatoare sunt mai mari decat hash-ul replicii. In caz
+    contrar, vom prelua elementele si le vom stoca in serverul adaugat.
+
+    - adaugarea unui obiect in server se face in functie de hash-ul cheii obiectului.
+    Cautam in hash ring elementul care are hash-ul mai mare decat cel al cheii.
+    Daca nu exista, vom adauga elementul in serverul care are o replica pe prima
+    pozitie din vector.
+
+    - gasirea sau stergerea unui obiect din server. Functionalitatile sunt similare cu
+    gasirea sau eliminarea unui element din hastable in functie de cheie.
+
+    - stergerea unui server. Il vom sterge din vector, iar din hash ring vom sterge
+    cele 3 elemente corespunzatoare. Inainte de stergere, preluam hashtable-ul asociat
+    serverului. Redistribuim fiecare obiect apeland functia de adaugare obiect in server.
+
+    - eliberarea tuturor resurselor folosite la implementare.
+
+
+
